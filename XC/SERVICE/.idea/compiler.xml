@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="xc-service-manage-course" />
+        <module name="xc-framework-common" />
+        <module name="xc-servicetest-producer" />
+        <module name="xc-govern-center" />
+        <module name="xc-framework-utils" />
+        <module name="xc-service-mange-cms" />
+        <module name="xc-framework-model" />
+        <module name="xc-service-api" />
+        <module name="xc-service-base-filesystem" />
+        <module name="xc-servicetest-customer" />
+        <module name="xc-service-mange-cms-client" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="demo" target="1.8" />
+      <module name="xc-framework-common" target="1.8" />
+      <module name="xc-framework-model" target="1.8" />
+      <module name="xc-framework-parent" target="1.8" />
+      <module name="xc-framework-parent1" target="1.8" />
+      <module name="xc-framework-utils" target="1.8" />
+      <module name="xc-govern-center" target="1.8" />
+      <module name="xc-service-api" target="1.8" />
+      <module name="xc-service-base-filesystem" target="1.8" />
+      <module name="xc-service-manage-course" target="1.8" />
+      <module name="xc-service-mange-cms" target="1.8" />
+      <module name="xc-service-mange-cms-client" target="1.8" />
+      <module name="xc-servicetest-customer" target="1.8" />
+      <module name="xc-servicetest-producer" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="xc-framework-common" options="-parameters" />
+      <module name="xc-framework-model" options="-parameters" />
+      <module name="xc-framework-utils" options="-parameters" />
+      <module name="xc-govern-center" options="-parameters" />
+      <module name="xc-service-api" options="-parameters" />
+      <module name="xc-service-base-filesystem" options="-parameters" />
+      <module name="xc-service-manage-course" options="-parameters" />
+      <module name="xc-service-mange-cms" options="-parameters" />
+      <module name="xc-service-mange-cms-client" options="-parameters" />
+      <module name="xc-servicetest-customer" options="-parameters" />
+      <module name="xc-servicetest-producer" options="-parameters" />
+    </option>
+  </component>
+</project>

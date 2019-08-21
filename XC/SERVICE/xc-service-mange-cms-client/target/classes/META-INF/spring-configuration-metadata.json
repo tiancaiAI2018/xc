@@ -1,0 +1,37 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.xuecheng.mange_cms_client.config.GridFSProperties",
+      "name": "spring.data.mongodb",
+      "type": "com.xuecheng.mange_cms_client.config.GridFSProperties"
+    },
+    {
+      "sourceType": "com.xuecheng.mange_cms_client.config.RabbitMQProperties",
+      "name": "xc.mq.rabbitmq",
+      "type": "com.xuecheng.mange_cms_client.config.RabbitMQProperties"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.xuecheng.mange_cms_client.config.GridFSProperties",
+      "name": "spring.data.mongodb.database",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.xuecheng.mange_cms_client.config.RabbitMQProperties",
+      "name": "xc.mq.rabbitmq.exchange",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.xuecheng.mange_cms_client.config.RabbitMQProperties",
+      "name": "xc.mq.rabbitmq.queue",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.xuecheng.mange_cms_client.config.RabbitMQProperties",
+      "name": "xc.mq.rabbitmq.routing-key",
+      "type": "java.lang.String"
+    }
+  ]
+}
