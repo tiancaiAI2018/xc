@@ -1,7 +1,9 @@
 package com.xuecheng.api.course;
 
+import com.xuecheng.framework.domain.cms.response.CoursePreviewResult;
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.Teachplan;
+import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.domain.course.response.AddCourseResult;
 import com.xuecheng.framework.domain.course.response.CourseResult;
@@ -25,4 +27,8 @@ public interface CourseControllerApi {
     CourseResult getCourseBaseById(String courseId);
     @ApiOperation("修改基础课程")
     ResponseResult editCourseBase( String courseId, CourseBase courseBase);
+    @ApiOperation("课程详细信息")
+    CourseView getCourseView( String courseid);
+    @ApiOperation("课程页面预览")
+    CoursePreviewResult preViewCourse(String courseId);
 }

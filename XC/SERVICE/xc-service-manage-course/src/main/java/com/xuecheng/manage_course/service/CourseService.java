@@ -3,6 +3,7 @@ package com.xuecheng.manage_course.service;
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.Teachplan;
 import com.xuecheng.framework.domain.course.ext.CourseInfo;
+import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.model.response.QueryResult;
@@ -27,4 +28,8 @@ public interface CourseService {
     CourseBase getCourseBaseById(String courseId);
 
     boolean editCourseBase(String courseId, CourseBase courseBase);
+
+    CourseView getCourseView(String courseId);
+
+    String preview(String courseId);
 }

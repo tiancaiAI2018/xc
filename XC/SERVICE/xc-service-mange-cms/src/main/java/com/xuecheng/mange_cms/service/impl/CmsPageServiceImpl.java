@@ -115,6 +115,8 @@ public class CmsPageServiceImpl implements CmsPageService {
             one.setPageWebPath(cmsPage.getPageWebPath());
             //更新物理路径
             one.setPagePhysicalPath(cmsPage.getPagePhysicalPath());
+            //更新数据模型来源
+            one.setDataUrl(cmsPage.getDataUrl());
             CmsPage save = cmsRepository.save(one);
             if(save!=null)return new CmsPageResult(CommonCode.SUCCESS,save);
         }
@@ -173,7 +175,16 @@ public class CmsPageServiceImpl implements CmsPageService {
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE,cmsPage.getSiteId(),msg);
         return true;
     }
+    @Override
+    public CmsPageResult save(CmsPage cmsPage){
+        CmsPage cmsPage1 = cmsRepository.findByPageNameAndSiteIdAndPageWebPath(cmsPage.getPageName(), cmsPage.getSiteId(), cmsPage.getPageWebPath());
+        if(cmsPage1!=null){
+            return this.edit(cmsPage1.getPageId(),cmsPage);
+        }else{
+            return this.add(cmsPage);
+        }
 
+    }
     /**
      * 根据页面模板和数据模型生成页面内容
      * @param template

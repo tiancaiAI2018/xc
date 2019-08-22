@@ -1,9 +1,11 @@
 package com.xuecheng.manage_course.controller;
 
 import com.xuecheng.api.course.CourseControllerApi;
+import com.xuecheng.framework.domain.cms.response.CoursePreviewResult;
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.Teachplan;
 import com.xuecheng.framework.domain.course.ext.CourseInfo;
+import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.domain.course.response.AddCourseResult;
@@ -62,5 +64,16 @@ public class CourseController implements CourseControllerApi {
     public ResponseResult editCourseBase(@PathVariable("id") String courseId, @RequestBody CourseBase courseBase) {
         boolean b = courseService.editCourseBase(courseId, courseBase);
         return b?ResponseResult.SUCCESS():ResponseResult.FAIL();
+    }
+    @GetMapping("/view/{id}")
+    @Override
+    public CourseView getCourseView(@PathVariable("id") String courseid){
+        return courseService.getCourseView(courseid);
+    }
+    @PostMapping("preview/{id}")
+    @Override
+    public CoursePreviewResult preViewCourse(@PathVariable("id")String courseId){
+        String url = courseService.preview(courseId);
+        return url==null? new CoursePreviewResult(CommonCode.FAIL,null):new CoursePreviewResult(CommonCode.SUCCESS,url);
     }
 }

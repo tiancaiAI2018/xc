@@ -25,4 +25,6 @@ public interface CmsPageControllerApi {
     public ResponseResult delete(String id);
     @ApiOperation("发布页面")
     public ResponseResult postPage(String id);
+    @ApiOperation("保存页面")
+    CmsPageResult save( CmsPage cmsPage);
 }

@@ -59,4 +59,5 @@ public interface CmsPageService {
      */
     public boolean postPage(String id);
 
+    CmsPageResult save(CmsPage cmsPage);
 }

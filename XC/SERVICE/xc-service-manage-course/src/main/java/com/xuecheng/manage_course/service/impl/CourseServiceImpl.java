@@ -2,30 +2,38 @@ package com.xuecheng.manage_course.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.xuecheng.framework.domain.cms.CmsPage;
+import com.xuecheng.framework.domain.cms.response.CmsPageResult;
 import com.xuecheng.framework.domain.course.CourseBase;
+import com.xuecheng.framework.domain.course.CourseMarket;
+import com.xuecheng.framework.domain.course.CoursePic;
 import com.xuecheng.framework.domain.course.Teachplan;
 import com.xuecheng.framework.domain.course.ext.CourseInfo;
+import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.domain.course.response.CourseCode;
 import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResult;
-import com.xuecheng.manage_course.dao.CourseBaseRepository;
-import com.xuecheng.manage_course.dao.CourseMapper;
-import com.xuecheng.manage_course.dao.TeachplanMapper;
-import com.xuecheng.manage_course.dao.TeachplanRepository;
+import com.xuecheng.manage_course.client.CMSClient;
+import com.xuecheng.manage_course.config.CmsProperties;
+import com.xuecheng.manage_course.dao.*;
 import com.xuecheng.manage_course.service.CourseService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@EnableConfigurationProperties(CmsProperties.class)
 public class CourseServiceImpl implements CourseService {
+    private CmsProperties cmsProperties;
     @Autowired
     private TeachplanMapper teachplanMapper;
     @Autowired
@@ -34,7 +42,15 @@ public class CourseServiceImpl implements CourseService {
     private CourseBaseRepository courseBaseRepository;
     @Autowired
     private CourseMapper courseMapper;
-
+    @Autowired
+    private CourseMarketRepository courseMarketRepository;
+    @Autowired
+    private CoursePicRepository coursePicRepository;
+    @Autowired
+    private CMSClient cmsClient;
+    public CourseServiceImpl(CmsProperties cmsProperties){
+        this.cmsProperties=cmsProperties;
+    }
     @Override
     public TeachplanNode findTeachplanList(String courseId) {
         if(StringUtils.isEmpty(courseId)) ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEIDISNULL);
@@ -141,5 +157,44 @@ public class CourseServiceImpl implements CourseService {
         courseBaseOld.setDescription(courseBase.getDescription());
         courseBaseRepository.save(courseBaseOld);
         return true;
+    }
+    @Override
+    public CourseView getCourseView(String courseId){
+        if(StringUtils.isEmpty(courseId))ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEIDISNULL);
+        CourseView courseView = new CourseView();
+        CourseBase courseBase = getCourseBaseById(courseId);
+        courseView.setCourseBase(courseBase);
+        TeachplanNode teachplanNode = findTeachplanList(courseId);
+        courseView.setTeachplanNode(teachplanNode);
+        Optional<CourseMarket> optionalMarket = courseMarketRepository.findById(courseId);
+        if(optionalMarket.isPresent())courseView.setCourseMarket(optionalMarket.get());
+        Optional<CoursePic> optionalCoursePic = coursePicRepository.findById(courseId);
+        if(optionalCoursePic.isPresent())courseView.setCoursePic(optionalCoursePic.get());
+        return courseView;
+    }
+    @Override
+    public String preview(String courseId){
+        CourseBase courseBase = getCourseBaseById(courseId);
+        CmsPage cmsPage = new CmsPage();
+        //站点
+        cmsPage.setSiteId(cmsProperties.getPublish_siteId());//课程预览站点
+        // 模板
+        cmsPage.setTemplateId(cmsProperties.getPublish_templateId());
+        //页面名称
+        cmsPage.setPageName(courseId+".html");
+        //页面别名
+        cmsPage.setPageAliase(courseBase.getName());
+        //页面访问路径
+        cmsPage.setPageWebPath(cmsProperties.getPublish_page_webpath());
+        //页面存储路径
+        cmsPage.setPagePhysicalPath(cmsProperties.getPublish_page_physicalpath());
+        //数据url
+        cmsPage.setDataUrl(cmsProperties.getPublish_dataUrlPre()+courseId);
+        //创建时间
+        cmsPage.setPageCreateTime(new Date());
+        //保存页面
+        CmsPageResult cmsPageResult = cmsClient.save(cmsPage);
+        if(!cmsPageResult.isSuccess())return null;
+        return cmsProperties.getPreviewUrl()+cmsPageResult.getCmsPage().getPageId();
     }
 }

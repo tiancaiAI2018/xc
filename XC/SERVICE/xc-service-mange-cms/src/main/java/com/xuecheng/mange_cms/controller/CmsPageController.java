@@ -48,4 +48,9 @@ public class CmsPageController implements CmsPageControllerApi {
             return new ResponseResult(CommonCode.SUCCESS);
         return new ResponseResult(CommonCode.FAIL);
     }
+    @PostMapping("/save")
+    @Override
+    public CmsPageResult save(@RequestBody CmsPage cmsPage){
+        return cmsPageService.save(cmsPage);
+    }
 }
