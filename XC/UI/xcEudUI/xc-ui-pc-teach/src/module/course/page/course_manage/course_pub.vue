@@ -59,10 +59,10 @@ export default{
         //调用课程管理服务的预览接口，得到课程预览url
       courseApi.preview(this.courseid).then((res) => {
         if(res.success){
-          this.$message.error('预览页面生成成功，请点击下方预览链接');
-          if(res.previewUrl){
+          this.$message.info('预览页面生成成功，请点击下方预览链接');
+          if(res.url){
             //预览url
-            this.previewurl = res.previewUrl
+            this.previewurl = res.url
           }
         }else{
           this.$message.error(res.message);
