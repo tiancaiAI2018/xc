@@ -4,10 +4,12 @@ import com.xuecheng.api.cms.CmsPageControllerApi;
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.domain.cms.response.CmsPageResult;
+import com.xuecheng.framework.domain.cms.response.CmsPostPageResult;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.mange_cms.service.CmsPageService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,5 +54,12 @@ public class CmsPageController implements CmsPageControllerApi {
     @Override
     public CmsPageResult save(@RequestBody CmsPage cmsPage){
         return cmsPageService.save(cmsPage);
+    }
+    @PostMapping("/postpagequick/")
+    @Override
+    public CmsPostPageResult postPageQuick(@RequestBody CmsPage cmsPage) {
+        String url = cmsPageService.postPageQuick(cmsPage);
+        return StringUtils.isNotEmpty(url)?new CmsPostPageResult(CommonCode.SUCCESS,url):
+                new CmsPostPageResult(CommonCode.FAIL,null);
     }
 }

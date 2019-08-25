@@ -59,5 +59,17 @@ public interface CmsPageService {
      */
     public boolean postPage(String id);
 
-    CmsPageResult save(CmsPage cmsPage);
+    /**
+     * 保存页面（没有新增，有修改）
+     * @param cmsPage
+     * @return
+     */
+    public CmsPageResult save(CmsPage cmsPage);
+
+    /**
+     * 一键发布页面
+     * @param cmsPage
+     * @return
+     */
+    public String postPageQuick(CmsPage cmsPage);
 }

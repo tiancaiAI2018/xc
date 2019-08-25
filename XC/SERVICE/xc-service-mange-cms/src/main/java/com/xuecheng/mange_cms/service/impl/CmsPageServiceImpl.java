@@ -5,6 +5,7 @@ import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.xuecheng.framework.domain.cms.CmsPage;
+import com.xuecheng.framework.domain.cms.CmsSite;
 import com.xuecheng.framework.domain.cms.CmsTemplate;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.domain.cms.response.CmsCode;
@@ -16,6 +17,7 @@ import com.xuecheng.framework.model.response.QueryResult;
 import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.mange_cms.config.RabbitMQConfig;
 import com.xuecheng.mange_cms.dao.CmsPageRepository;
+import com.xuecheng.mange_cms.dao.CmsSiteRepository;
 import com.xuecheng.mange_cms.dao.CmsTemplateRespository;
 import com.xuecheng.mange_cms.service.CmsPageService;
 import freemarker.cache.StringTemplateLoader;
@@ -57,6 +59,8 @@ public class CmsPageServiceImpl implements CmsPageService {
     private RestTemplate restTemplate;
     @Autowired
     private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private CmsSiteRepository cmsSiteRepository;
     @Override
     public QueryResponseResult findList(int page, int size, QueryPageRequest queryPageRequest) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching().withMatcher("pageAliase", ExampleMatcher.GenericPropertyMatchers.contains());
@@ -177,6 +181,7 @@ public class CmsPageServiceImpl implements CmsPageService {
     }
     @Override
     public CmsPageResult save(CmsPage cmsPage){
+        if(cmsPage==null)ExceptionCast.cast(CommonCode.INVALID_PARAM);
         CmsPage cmsPage1 = cmsRepository.findByPageNameAndSiteIdAndPageWebPath(cmsPage.getPageName(), cmsPage.getSiteId(), cmsPage.getPageWebPath());
         if(cmsPage1!=null){
             return this.edit(cmsPage1.getPageId(),cmsPage);
@@ -184,6 +189,34 @@ public class CmsPageServiceImpl implements CmsPageService {
             return this.add(cmsPage);
         }
 
+    }
+
+    /**
+     * 一键发布页面
+     * @param cmsPage
+     * @return
+     */
+    @Override
+    public String postPageQuick(CmsPage cmsPage) {
+        //添加或修改页面
+        CmsPageResult save = this.save(cmsPage);
+        if(!save.isSuccess())ExceptionCast.cast(CmsCode.CMS_PUBLISH_PAGE);
+        //得到页面ID
+        String pageId = save.getCmsPage().getPageId();
+        CmsSite cmsSite = this.getCmsSiteById(save.getCmsPage().getSiteId());
+        //发布页面
+        boolean b = this.postPage(pageId);
+        if(!b)ExceptionCast.cast(CmsCode.CMS_PUBLISH_PAGE);
+        //拼接页面发布后的url
+        String url = cmsSite.getSiteDomain()+cmsSite.getSiteWebPath()+cmsPage.getPageWebPath()+cmsPage.getPageName();
+        return url;
+    }
+
+    private CmsSite getCmsSiteById(String siteId){
+        if(StringUtils.isEmpty(siteId))ExceptionCast.cast(CmsCode.CMS_SITE_NO);
+        Optional<CmsSite> optional = cmsSiteRepository.findById(siteId);
+        if(!optional.isPresent())ExceptionCast.cast(CmsCode.CMS_SITE_NO);
+        return optional.get();
     }
     /**
      * 根据页面模板和数据模型生成页面内容

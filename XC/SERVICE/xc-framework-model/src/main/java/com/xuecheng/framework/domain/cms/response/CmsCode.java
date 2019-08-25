@@ -17,7 +17,8 @@ public enum CmsCode implements ResultCode {
     CMS_COURSE_PERVIEWISNULL(false,24007,"预览页面为空！"),
     CMS_GENERATEHTML_TEMPLATEIDISNULL(false,24008,"从页面信息中找不到获取数据的模板ID"),
     CMS_PAGE_NO(false,24009,"页面不存在"),
-    CMS_SITE_NO(false,24010,"主站不存在");
+    CMS_SITE_NO(false,24010,"主站不存在"),
+    CMS_PUBLISH_PAGE(false,24011,"页面发布失败");
     //操作代码
     boolean success;
     //操作代码
