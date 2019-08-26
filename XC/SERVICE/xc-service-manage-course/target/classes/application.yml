@@ -17,6 +17,17 @@ spring:
       testOnReturn: false #归还连接时检测连接是否有效
       timeBetweenEvictionRunsMillis: 60000 #配置间隔检测连接是否有效的时间（单位是毫秒）
       minEvictableIdleTimeMillis: 300000  #连接在连接池的最小生存时间（毫秒）
+      filters: stat,wall
+      web-stat-filter:
+        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+        enabled: true
+        url-pattern: "/*"
+      stat-view-servlet:
+        allow: 127.0.0.1
+        url-pattern: "/druid/*"
+        login-username: druid
+        login-password: druid
+        reset-enable: false
 eureka:
   client:
     registerWithEureka: true #服务注册，是否将自己注册到Eureka服务中
@@ -38,6 +49,6 @@ xc:
     publish-data-url-pre: http://localhost:31200/course/view/
     publish-page-physicalpath: /course/detail/
     publish-page-webpath: /course/detail/
-    publish-site-id: 5a751fab6abb5044e0d19ea1
+    publish-site-id: 5d634c06c710980418ae49c5
     publish-template-id: 5ad9a24d68db5239b8fef199
     preview-url: http://www.xc.com/cms/html/preview/

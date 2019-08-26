@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class CmsPageServiceImpl implements CmsPageService {
@@ -61,6 +62,7 @@ public class CmsPageServiceImpl implements CmsPageService {
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private CmsSiteRepository cmsSiteRepository;
+    private ReentrantLock lock = new ReentrantLock();
     @Override
     public QueryResponseResult findList(int page, int size, QueryPageRequest queryPageRequest) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching().withMatcher("pageAliase", ExampleMatcher.GenericPropertyMatchers.contains());
@@ -170,13 +172,18 @@ public class CmsPageServiceImpl implements CmsPageService {
         if(!optional.isPresent())ExceptionCast.cast(CmsCode.CMS_PAGE_NO);
         CmsPage cmsPage = optional.get();
         //生成一个静态并保存静态化页面
-        saveHtml(cmsPage);
-        //设定消息
-        Map map = new HashMap();
-        map.put("pageId",cmsPage.getPageId());
-        String msg = JSON.toJSONString(map);
-        //发送消息到指定的额消费者
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE,cmsPage.getSiteId(),msg);
+        try{
+            lock.lock();
+            saveHtml(cmsPage);
+            //设定消息
+            Map map = new HashMap();
+            map.put("pageId",cmsPage.getPageId());
+            String msg = JSON.toJSONString(map);
+            //发送消息到指定的额消费者
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE,cmsPage.getSiteId(),msg);
+        }finally {
+            lock.unlock();
+        }
         return true;
     }
     @Override
@@ -200,13 +207,13 @@ public class CmsPageServiceImpl implements CmsPageService {
     public String postPageQuick(CmsPage cmsPage) {
         //添加或修改页面
         CmsPageResult save = this.save(cmsPage);
-        if(!save.isSuccess())ExceptionCast.cast(CmsCode.CMS_PUBLISH_PAGE);
+        if(!save.isSuccess())ExceptionCast.cast(CmsCode.CMS_PUBLISH_PAGEFAIL);
         //得到页面ID
         String pageId = save.getCmsPage().getPageId();
         CmsSite cmsSite = this.getCmsSiteById(save.getCmsPage().getSiteId());
         //发布页面
         boolean b = this.postPage(pageId);
-        if(!b)ExceptionCast.cast(CmsCode.CMS_PUBLISH_PAGE);
+        if(!b)ExceptionCast.cast(CmsCode.CMS_PUBLISH_PAGEFAIL);
         //拼接页面发布后的url
         String url = cmsSite.getSiteDomain()+cmsSite.getSiteWebPath()+cmsPage.getPageWebPath()+cmsPage.getPageName();
         return url;

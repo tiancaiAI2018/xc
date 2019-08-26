@@ -3,7 +3,9 @@ package com.xuecheng.manage_course.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xuecheng.framework.domain.cms.CmsPage;
+import com.xuecheng.framework.domain.cms.response.CmsCode;
 import com.xuecheng.framework.domain.cms.response.CmsPageResult;
+import com.xuecheng.framework.domain.cms.response.CmsPostPageResult;
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.CourseMarket;
 import com.xuecheng.framework.domain.course.CoursePic;
@@ -13,6 +15,7 @@ import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.domain.course.response.CourseCode;
+import com.xuecheng.framework.domain.system.SysDictionaryEnum;
 import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResult;
@@ -174,6 +177,34 @@ public class CourseServiceImpl implements CourseService {
     }
     @Override
     public String preview(String courseId){
+        //页面转换（course转为cmspage）
+        CmsPage cmsPage = this.courseToCmsPage(courseId);
+        CmsPageResult cmsPageResult = cmsClient.save(cmsPage);
+        if(!cmsPageResult.isSuccess())ExceptionCast.cast(CommonCode.FAIL);
+        return cmsProperties.getPreviewUrl()+cmsPageResult.getCmsPage().getPageId();
+    }
+
+    @Override
+    public String postPageQuick(String courseId) {
+        //页面转换（course转为cmspage）
+        CmsPage cmsPage = this.courseToCmsPage(courseId);
+        //一键发布页面(保存并发布)
+        CmsPostPageResult cmsPostPageResult = cmsClient.postPageQuick(cmsPage);
+        if(!cmsPostPageResult.isSuccess())ExceptionCast.cast(CmsCode.CMS_PUBLISH_PAGEFAIL);
+        /**
+         * 页面发布成功 则进行 course的一些操作
+         */
+        //修改页面为已发布
+        CourseBase courseBase = this.setStatus(SysDictionaryEnum.COURSE_PUBLISH, courseId);
+        String url = cmsPostPageResult.getUrl();
+        return url;
+    }
+    /**
+     * 将course页面信息转为CMS中的页面信息
+     * @param courseId
+     * @return
+     */
+    private CmsPage courseToCmsPage(String courseId){
         CourseBase courseBase = getCourseBaseById(courseId);
         CmsPage cmsPage = new CmsPage();
         //站点
@@ -192,9 +223,12 @@ public class CourseServiceImpl implements CourseService {
         cmsPage.setDataUrl(cmsProperties.getPublish_dataUrlPre()+courseId);
         //创建时间
         cmsPage.setPageCreateTime(new Date());
-        //保存页面
-        CmsPageResult cmsPageResult = cmsClient.save(cmsPage);
-        if(!cmsPageResult.isSuccess())return null;
-        return cmsProperties.getPreviewUrl()+cmsPageResult.getCmsPage().getPageId();
+        return cmsPage;
+    }
+    private CourseBase setStatus(SysDictionaryEnum sysDictionaryEnum, String courseId){
+        CourseBase courseBase = this.getCourseBaseById(courseId);
+        courseBase.setStatus(sysDictionaryEnum.getValue());
+        CourseBase save = courseBaseRepository.save(courseBase);
+        return save;
     }
 }

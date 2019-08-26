@@ -9,6 +9,7 @@ import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.domain.course.response.AddCourseResult;
+import com.xuecheng.framework.domain.course.response.CoursePublishResult;
 import com.xuecheng.framework.domain.course.response.CourseResult;
 import com.xuecheng.framework.domain.course.response.TeachplanNodeResult;
 import com.xuecheng.framework.model.response.CommonCode;
@@ -75,5 +76,12 @@ public class CourseController implements CourseControllerApi {
     public CoursePreviewResult preViewCourse(@PathVariable("id")String courseId){
         String url = courseService.preview(courseId);
         return url==null? new CoursePreviewResult(CommonCode.FAIL,null):new CoursePreviewResult(CommonCode.SUCCESS,url);
+    }
+    @PostMapping("publish/{id}")
+    @Override
+    public CoursePublishResult postCoursePage(@PathVariable("id") String courseId) {
+        String url = courseService.postPageQuick(courseId);
+        return StringUtils.isNotEmpty(url)?new CoursePublishResult(CommonCode.SUCCESS,url):
+                new CoursePublishResult(CommonCode.FAIL,null);
     }
 }

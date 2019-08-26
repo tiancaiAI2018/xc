@@ -55,7 +55,7 @@ public class CmsPageController implements CmsPageControllerApi {
     public CmsPageResult save(@RequestBody CmsPage cmsPage){
         return cmsPageService.save(cmsPage);
     }
-    @PostMapping("/postpagequick/")
+    @PostMapping("/postpagequick")
     @Override
     public CmsPostPageResult postPageQuick(@RequestBody CmsPage cmsPage) {
         String url = cmsPageService.postPageQuick(cmsPage);
