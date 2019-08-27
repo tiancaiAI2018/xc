@@ -29,6 +29,7 @@ public class ConsumerPostPage {
             cmsPageService.savePageToServerPath(pageId);
         }catch (Exception e){
             LOGGER.error("save post_page is fail the pageId is:{}",pageId);
+            LOGGER.error("catch error {}",e.getMessage());
         }
     }
 }

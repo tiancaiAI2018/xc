@@ -174,7 +174,7 @@ public class CmsPageServiceImpl implements CmsPageService {
         //生成一个静态并保存静态化页面
         try{
             lock.lock();
-            saveHtml(cmsPage);
+            saveHtml(cmsPage.getPageId());
             //设定消息
             Map map = new HashMap();
             map.put("pageId",cmsPage.getPageId());
@@ -280,7 +280,10 @@ public class CmsPageServiceImpl implements CmsPageService {
      * @Author: Administrator
      * @Date: 2019/8/3 15:57
      */
-    private void saveHtml(CmsPage cmsPage){
+    private void saveHtml(String pageId){
+        CmsPageResult cmsPageResult = this.findById(pageId);
+        if(!cmsPageResult.isSuccess())ExceptionCast.cast(CmsCode.CMS_PAGE_NO);
+        CmsPage cmsPage = cmsPageResult.getCmsPage();
         //得到静态化页面的字符串
         String html = generateHtml(cmsPage.getPageId());
         //创建输入流
