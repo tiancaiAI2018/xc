@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sound.midi.Soundbank;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Administrator
@@ -36,5 +38,18 @@ public class TestDao {
         CourseBase courseBase = courseMapper.findCourseBaseById("402885816240d276016240f7e5000002");
         System.out.println(courseBase);
 
+    }
+    @Test
+    public void testPattern(){
+        String phone = "love23next234csdn3423javaeye";
+        String regEx = "[^0-9]";
+        Pattern pattern = Pattern.compile(regEx);
+        Matcher matcher = pattern.matcher(phone);
+        System.out.println(matcher.replaceAll(""));
+    }
+    @Test
+    public void testList(){
+        System.out.println("abc".indexOf("a"));
+        System.out.println("a".indexOf("abc"));
     }
 }

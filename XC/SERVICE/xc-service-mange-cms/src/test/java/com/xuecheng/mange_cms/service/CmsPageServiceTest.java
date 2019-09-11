@@ -18,4 +18,8 @@ public class CmsPageServiceTest {
         String s = cmsPageService.generateHtml(pageId);
         System.out.println(s);
     }
+    @Test
+    public void test() throws InterruptedException {
+
+    }
 }
